@@ -1,0 +1,196 @@
+/*OLD CODE WITH CSS
+
+
+<!-- Student -->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="studentStyle.css">
+    <script src='https://cdn.firebase.com/js/client/1.1.1/firebase.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    <script src="bootstrap.min.js"></script>
+  </head>
+  <body>
+  <!-- <div id='messagesDiv'></div> -->
+    <!-- <input type='text' id='nameInput' placeholder='Name'> -->
+
+    <br />
+    <h2 id="h2"> Enter your class </h2>
+
+<!--     <div class = "InputBox">
+      <img id="main_pic" src="main_pic.jpg" alt="Education" style="width:304px;height:228px">
+      <input type='text' id='classRoom' placeholder='CS101'>
+      <input type='text' id='messageInput' placeholder='Message' hidden>
+    </div>
+
+    <div class="Button">
+      <button id="addClass">Add Class</button>
+    </div>
+
+
+
+    <div class="Button">
+      <button id="submit" hidden>Submit</button>
+    </div> -->
+
+
+    
+
+    
+
+
+    <script>
+      var name = Math.round(100 * Math.random()).toString();
+      var myDataRef = new Firebase('https://burning-heat-1923.firebaseio.com/courses/test_class/session1');
+      $('#messageInput').keypress(function (e) {
+          if (e.keyCode == 13)
+            $("#submit").click();
+      });
+    $('#classRoom').keypress(function (e) {
+        if (e.keyCode == 13) {
+           $("#addClass").click();  
+        }
+      });
+    $("#submit").click(function(){
+          var text = $('#messageInput').val();
+          $('#messageInput').val('');  
+          $("#messageInput")[0].disabled=true;
+          $("#submit")[0].disabled=true;
+          
+          //CALCULATE TIME
+          var currentTime = new Date()
+          var hours = currentTime.getHours()
+          var minutes = currentTime.getMinutes()
+
+          if (minutes < 10)
+          minutes = "0" + minutes
+
+          var suffix = "AM";
+          if (hours >= 12) {
+          suffix = "PM";
+          hours = hours - 12;
+          }
+          if (hours == 0) {
+          hours = 12;
+          }
+          //document.write("<b>" + hours + ":" + minutes + " " + suffix + "</b>")
+          var displayTime = hours + ":" + minutes + " " + suffix
+
+
+          
+          setTimeout(reenable,30000);
+          myDataRef.push({name: name, text: text, time: displayTime});
+          //myDataRef.push({name: name, text: text});
+          $('#messageInput').val(''); 
+    });
+  myDataRef.on('child_added', function(snapshot) {
+        var message = snapshot.val();
+    //displayChatMessage(message.name, message.text);
+      });
+
+    $("#addClass").click(function(){
+        console.log("Entered clicking function");
+        $("#messageInput")[0].hidden=false;
+        $("#addClass")[0].hidden=true;
+        $("#classRoom")[0].hidden=true;
+        $("#submit")[0].hidden=false;
+        $("h2")[0].innerHTML= "What is your question?";
+        $("#main_pic")[0].hidden = true;
+        myDataRef = new Firebase('https://burning-heat-1923.firebaseio.com/courses/' + $("#classRoom").val() +'/session1'); 
+    });
+    //function displayChatMessage(name, text) {
+     //   $('<div/>').text(text).prepend($('<em/>').text(name+': ')).appendTo($('#messagesDiv'));
+    //    $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+    //  };
+   function reenable(){
+      $("#messageInput")[0].disabled=false;
+      $("#submit")[0].disabled=false;
+     };
+
+    </script>
+  </body>
+</html>
+
+
+
+
+
+
+//////
+
+
+h2 {
+    background-color: #e0eeee; /*  #6495ed; */
+    text-align: center;
+    color: #a081d0;
+    width: 820px;
+
+    border: 0.1px solid red;
+    outline-style: solid;
+    outline-width: thin;
+}
+
+body {
+    background-color: #e0ffff;
+}
+
+div {
+    background-color: #b0c4de;
+}
+
+.InputBox {
+	background-color: #b0c4de;
+	float: left;
+	width: 700px;
+    height: 390px;
+    margin: 5px;
+
+    border: 1px solid red;
+    outline-style: solid;
+    outline-width: thin;
+}
+
+#main_pic {
+	margin: 5px;
+    padding: 5px;
+    /*border: 1px solid #0000ff;*/
+    height: auto;
+    width: auto;
+    float: left;
+    margin-top: 50px;
+    margin-left: 20px;
+    text-align: center;
+}
+
+
+/*The following two are for the text-box. */
+#classRoom {
+	width: 200px;
+    height: 90px;
+    margin-top: 200px;
+    margin-left: 50px;
+    margin: 55px;
+}
+
+#messageInput {
+	width: 600px;
+    height: 290px;
+    margin: 40px;
+}
+
+
+/*This is for the button on the right*/
+button {
+	background-color: #b0c4aa;
+	float:left;
+	width: 100px;
+    height: 390px;
+    margin: 5px;
+
+    border: 1px solid red;
+    outline-style: solid;
+    outline-width: thin;
+}
+
+
+
+*/

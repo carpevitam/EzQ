@@ -1,0 +1,74 @@
+
+
+h2 {
+    background-color: #e0eeee; /*  #6495ed; */
+    text-align: center;
+    color: #a081d0;
+    width: 820px;
+
+    border: 0.1px solid red;
+    outline-style: solid;
+    outline-width: thin;
+}
+
+body {
+    background-color: #e0ffff;
+}
+
+div {
+    background-color: #b0c4de;
+}
+
+.InputBox {
+    background-color: #b0c4de;
+    float: left;
+    width: 700px;
+    height: 390px;
+    margin: 5px;
+
+    border: 1px solid red;
+    outline-style: solid;
+    outline-width: thin;
+}
+
+#main_pic {
+    margin: 5px;
+    padding: 5px;
+    /*border: 1px solid #0000ff;*/
+    height: auto;
+    width: auto;
+    float: left;
+    margin-top: 50px;
+    margin-left: 20px;
+    text-align: center;
+}
+
+/*The following two are for the text-box. */
+#classRoom {
+    width: 200px;
+    height: 90px;
+    margin-top: 200px;
+    margin-left: 50px;
+    margin: 55px;
+}
+
+
+/*#getClass {
+    width: 600px;
+    height: 290px;
+    margin: 40px;
+}*/
+
+
+/*This is for the button on the right*/
+button {
+    background-color: #b0c4aa;
+    float:left;
+    width: 100px;
+    height: 390px;
+    margin: 5px;
+
+    border: 1px solid red;
+    outline-style: solid;
+    outline-width: thin;
+}

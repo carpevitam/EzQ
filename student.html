@@ -1,0 +1,190 @@
+<!-- Student -->
+<html>
+  <head>
+    <title>EzQ</title>
+
+    <!-- <link rel="stylesheet" type="text/css" href="studentStyle.css"> -->
+    <script src='https://cdn.firebase.com/js/client/2.0.3/firebase.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <link href="jumbotron-narrow.css" rel="stylesheet">
+    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
+
+
+  </head>
+  <body>
+
+
+    <div class="container">
+      <div class="header">
+        <nav>
+          <ul class="nav nav-pills pull-right">
+            <li role="presentation" class="active"><a href="#">Student Home</a></li>
+            <li role="presentation"><a href="#">About</a></li>
+            <li role="presentation"><a href="#">Contact</a></li>
+          </ul>
+        </nav>
+        <h3 class="text-muted"><a href="index.html">EzQ</a></h3>
+      </div>
+
+
+
+      <div class="jumbotron">
+        <h1>Enter Your Class </h1>
+        <p id="blurb" class="lead"> Please enter your desired class. Once you select your class, you will be able to ask anonymous questions to your professor in class. However, be aware of trolling, we will be able to retrieve the information of abusers. </p>
+        
+      </div>
+
+
+      <div class="row marketing">
+        <div class="col-lg-6">
+          <h4><img id="pic1" src="main_pic.jpg" alt="Education" style="width:304px;height:228px">
+            Select a class:</h4>
+          <p>
+            <input type='text' id='classRoom' placeholder='CS101'>
+            <select id="classes" name="classes"></select>
+            <input type='text' id='messageInput' placeholder='Message' hidden>
+          </p>
+
+          <p>
+            <a id="addClass" class="btn btn-lg btn-success" href="#" role="button">Add Class</a>
+            <a id="submit" class="btn btn-lg btn-success" href="#" role="button" hidden>Submit</a>
+            <!-- <button id="submit" hidden>Submit</button> -->
+            <!-- <button id="addClass">Add Class</button> -->
+          </p>
+
+        </div>
+      </div>
+
+      <footer class="footer">
+        <p>© EzQ - Duke Hackathon 2014</p>
+      </footer>
+
+    </div> 
+
+
+
+
+
+
+
+    <!--<h2 id="h2"> Enter your class </h2>-->
+    <!--<select id="classes" name="classes"></select>-->
+    <!--<button id="addClass">Add Class</button>-->
+    <!--<input type='text' id='messageInput' placeholder='Message' hidden>-->
+    <!--<button id="submit" hidden>Submit</button>-->
+    
+
+    <br />
+    <script>
+      $("#messageInput").hide();
+      $("#classRoom").hide();
+      $("#submit").hide();
+    
+      var name = Math.round(100 * Math.random()).toString();
+      var myDataRef = new Firebase('https://burning-heat-1923.firebaseio.com/courses/');
+      var selectClass = $("#classes")[0];
+      var session_name = '';
+      myDataRef.orderByKey().on("child_added", function(snapshot) {
+      // ACCESS: $("select option:selected").text();
+      $('<option/>').text(snapshot.key()).appendTo(selectClass);
+    });
+      $('#messageInput').keypress(function (e) {
+          if (e.keyCode == 13)
+            $("#submit").click();
+      });
+
+    $("#submit").click(function(){
+          var text = $('#messageInput').val();
+          $('#messageInput').val('');  
+          $("#messageInput")[0].disabled=true;
+          $("#submit")[0].disabled=true;
+          
+          //CALCULATE TIME
+          var currentTime = new Date()
+          var hours = currentTime.getHours()
+          var minutes = currentTime.getMinutes()
+
+          if (minutes < 10)
+          minutes = "0" + minutes
+
+          var suffix = "AM";
+          if (hours >= 12) {
+          suffix = "PM";
+          hours = hours - 12;
+          }
+          if (hours == 0) {
+          hours = 12;
+          }
+          var displayTime = hours + ":" + minutes + " " + suffix
+          setTimeout(reenable,30000);
+          console.log(session_name);
+          var can_push = true;
+          myBlockList = new Firebase('https://burning-heat-1923.firebaseio.com/courses/' + $("select option:selected").text() + '/' + session_name + '/block_list'); 
+          myBlockList.orderByKey().on("value", function(snapshot){
+            for(key in snapshot.val())
+              console.log(snapshot.val()[key] == name);
+              if(snapshot.val()[key] == name)
+                can_push = false;
+          });
+          if(can_push)
+            myDataRef.push({name: name, text: text, time: displayTime});
+          $('#messageInput').val(''); 
+    });
+
+  myDataRef.on('child_added', function(snapshot) {
+        var message = snapshot.val();
+      });
+      
+      
+    $("#addClass").click(function(){
+         myDataRef = new Firebase('https://burning-heat-1923.firebaseio.com/courses/' + $("select option:selected").text() + '/classActive');
+         myDataRef.on("value", function(snapshot){
+          console.log(snapshot.val());
+          if(snapshot.val()){
+
+          console.log("Entered clicking function");
+          $("#messageInput").show();
+          console.log($("#messageInput"));
+          $("#addClass").hide();
+          $("#classRoom").hide();
+          $("#classes").hide();
+          $("#submit").show();
+          $("h1")[0].innerHTML= "What is your question?";
+          $("h4")[0].innerHTML= "Question:";
+          $("#blurb").hide();
+          // $("#pic1")[0].hidden = true;
+          myDataRef = new Firebase('https://burning-heat-1923.firebaseio.com/courses/' + $("select option:selected").text() + '/most_recent_session');
+          myDataRef.on("value", function(snapshot){
+          session_name = snapshot.val();
+          myDataRef = new Firebase('https://burning-heat-1923.firebaseio.com/courses/' + $("select option:selected").text() + '/' + snapshot.val()); 
+          }); 
+        }
+        else
+          alert("Sorry, this class is not active. Try again later.");
+        });
+ 
+    });
+      
+      
+      
+    // $("#addClass").click(function(){
+    //     $("#messageInput")[0].hidden=false;
+    //     $("#addClass")[0].hidden=true;
+    //     $("#submit")[0].hidden=false;
+    //     $("#classes")[0].hidden=true;
+    //     $("h2")[0].innerHTML= "What is your question?";
+    //     myDataRef = new Firebase('https://burning-heat-1923.firebaseio.com/courses/' + $("select option:selected").text() + '/most_recent_session');
+    //     myDataRef.on("value", function(snapshot){
+    //         session_name = snapshot.val();
+    //         myDataRef = new Firebase('https://burning-heat-1923.firebaseio.com/courses/' + $("select option:selected").text() + '/' + snapshot.val()); 
+    //     });
+    // });
+
+   function reenable(){
+      $("#messageInput")[0].disabled=false;
+      $("#submit")[0].disabled=false;
+     };
+    </script>
+  </body>
+</html>

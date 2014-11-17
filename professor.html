@@ -1,0 +1,94 @@
+<!-- The prof -->
+
+<html>
+  <head>
+    <script src='https://cdn.firebase.com/js/client/1.1.1/firebase.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    <link rel="stylesheet" href="animate.min.css">
+  </head>
+  <body>
+  <h2 id="h2"> What class do you want to enter? </h2>
+    <div id='messagesDiv'></div>
+    <input type='text' id='className' placeholder='CS101'>
+    <button id="getClass">Select Class</button>
+    <input type='text' id='sessionName' placeholder='Math 101 1/2/14 1:00' hidden>
+    <button id="getSessionName" hidden>Submit Session Name</button>
+    <button id ="blockUser" hidden>Block This User?</button>
+    <button id ="blockUserCancel" hidden>Cancel</button>
+
+    
+    
+    <script>
+    
+    var myDataRef = new Firebase('https://burning-heat-1923.firebaseio.com');      
+    var blockID = '';
+    function displayChatMessage(time, name, text) {
+        $('<div/>').addClass('animated fadeInDown').text(text).prepend($('<a/>').text(name+':\t')).prepend($('<b/>').text(time+':\t')).prependTo($('#messagesDiv'));
+        $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+        $("a").click(function () {
+          $("#blockUser")[0].hidden=false;
+          $("#blockUserCancel")[0].hidden=false;
+          blockID = this.innerHTML.substring(0, this.innerHTML.length - 2);
+          console.log(blockID);
+        });
+      };
+    $("#getClass").click(function(){
+        console.log("Entered clicking function");
+        $("#getClass")[0].hidden=true;
+        $("#className")[0].hidden=true;
+        $("#sessionName")[0].hidden=false;
+        $("#getSessionName")[0].hidden=false;
+        myDataRef = new Firebase('https://burning-heat-1923.firebaseio.com/courses/' + $("#className").val() + '/classActive'); 
+        myDataRef.set(true)
+    });
+    $('#className').keypress(function (e) {
+        if (e.keyCode == 13) {
+           $("#getClass").click();  
+        }
+    });
+    $("#getSessionName").click(function(){
+        console.log("Entered clicking function");
+        $("#sessionName")[0].hidden=true;
+        $("#getSessionName")[0].hidden=true;
+        $("h2")[0].innerHTML= "Here are the class questions.";
+        
+        myDataRef =  new Firebase('https://burning-heat-1923.firebaseio.com/courses/' + $("#className").val() + '/most_recent_session');
+        myDataRef.set($("#sessionName").val());
+        var myDataRef = new Firebase('https://burning-heat-1923.firebaseio.com/courses/' + $("#className").val() + '/' + $("#sessionName").val()); 
+
+        myDataRef.on('child_added', function(snapshot){
+          var message = snapshot.val();
+          console.log(snapshot.name() == "block_list");
+
+          if(!(snapshot.name() == "block_list"))
+            displayChatMessage(message.time, message.name, message.text);
+        });
+
+    });
+    $('#sessionName').keypress(function (e) {
+        if (e.keyCode == 13) {
+           $("#getSessionName").click();  
+        }
+
+    });
+
+    $("#blockUser").click(function (){
+      $("#blockUser")[0].hidden=true;
+      $("#blockUserCancel")[0].hidden=true;
+      myDataRef =  new Firebase('https://burning-heat-1923.firebaseio.com/courses/' + $("#className").val() + '/' + $("#sessionName").val() + '/block_list');
+      myDataRef.push(blockID);
+    });
+    $("#blockUserCancel").click(function (){
+      $("#blockUserCancel")[0].hidden=true;
+      $("#blockUser")[0].hidden=true;
+    });
+
+     window.onbeforeunload = function () {
+        myDataRef = new Firebase('https://burning-heat-1923.firebaseio.com/courses/' + $("#className").val() + '/classActive'); 
+        myDataRef.set(false);
+    }; 
+    myDataRef = new Firebase('https://burning-heat-1923.firebaseio.com/courses/' + $("#className").val());
+    myDataRef.onDisconnect().update({classActive: false});
+    </script>
+  </body>
+</html>
